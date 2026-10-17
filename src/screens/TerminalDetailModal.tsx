@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
-import { supabase, type Terminal, type InventoryMovement } from '@/lib/supabase';
+import { supabase, type Terminal, type InventoryMovement, type SaleFinance } from '@/lib/supabase';
 import { Modal, StatusChip, LoadingSpinner, Button, Select, Textarea, Input, ErrorBanner } from '@/components/ui';
 import { STATUS_LABELS, STATUS_COLORS, formatDate, formatDateTime, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { Package, ArrowRight, ShoppingCart, AlertTriangle, RotateCcw, Edit } from 'lucide-react';
+import { Package, ArrowRight, ShoppingCart, AlertTriangle, RotateCcw, Edit, TrendingUp } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal: Terminal; onClose: () => void; onChanged: () => void }) {
   const { user } = useAuth();
   const [movements, setMovements] = useState<InventoryMovement[]>([]);
+  const [finance, setFinance] = useState<SaleFinance | null>(null);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +22,14 @@ export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal
       .eq('terminal_id', terminal.id)
       .order('created_at', { ascending: true });
     setMovements((data ?? []) as InventoryMovement[]);
+
+    // Financial record for this terminal's sale
+    if (terminal.sale_id) {
+      const { data: fin } = await supabase.from('sale_finances').select('*, agent:agents(*)').eq('sale_id', terminal.sale_id).maybeSingle();
+      setFinance((fin as SaleFinance) ?? null);
+    } else {
+      setFinance(null);
+    }
     setLoading(false);
   };
 
@@ -89,6 +98,24 @@ export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal
           <div className="rounded-lg bg-slate-50 p-3 text-sm text-slate-600">
             <p className="mb-1 text-xs font-semibold text-slate-400">Notes</p>
             {terminal.notes}
+          </div>
+        )}
+
+        {/* Financial details */}
+        {terminal.sale_id && finance && (
+          <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3">
+            <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700"><TrendingUp className="h-4 w-4 text-blue-600" /> Financial Details</p>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+              <DetailRow label="Selling Price" value={finance.selling_price != null ? `₦${Number(finance.selling_price).toLocaleString()}` : '—'} />
+              <DetailRow label="Commission Earned" value={`₦${Number(finance.commission_earned).toLocaleString()}`} />
+              <DetailRow label="Commission Status" value={finance.commission_status} />
+              <DetailRow label="Commission Paid" value={`₦${Number(finance.commission_paid_amount).toLocaleString()}`} />
+              <DetailRow label="Delivery Cost" value={`₦${Number(finance.delivery_amount).toLocaleString()}`} />
+              <DetailRow label="Delivery Status" value={`${finance.delivery_status}${finance.delivery_recipient ? ` — ${finance.delivery_recipient}` : ''}`} />
+              <DetailRow label="Other Expenses" value={`₦${Number(finance.other_expense).toLocaleString()}`} />
+              <DetailRow label="Net Profit" value={`₦${Number(finance.net_profit).toLocaleString()}`} />
+            </div>
+            {finance.delivery_note && <p className="mt-2 text-xs text-slate-500">Note: {finance.delivery_note}</p>}
           </div>
         )}
 

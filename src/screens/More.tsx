@@ -1,7 +1,7 @@
 import type { NavTab } from '@/components/AppShell';
 import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui';
-import { Package, ArrowLeftRight, Receipt, FileText, Shield, Settings as SettingsIcon, Users, ChevronRight, FileDown } from 'lucide-react';
+import { Package, ArrowLeftRight, Receipt, FileText, Shield, Settings as SettingsIcon, Users, ChevronRight, FileDown, TrendingUp, Image as ImageIcon, Wallet, Landmark, ReceiptText } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import { ReceiptsScreen } from '@/screens/Receipts';
@@ -10,8 +10,11 @@ import { ReportsScreen } from '@/screens/Reports';
 import { AuditScreen } from '@/screens/Audit';
 import { SettingsScreen } from '@/screens/Settings';
 import { CustomersScreen } from '@/screens/Customers';
+import { FinanceDashboard } from '@/screens/FinanceDashboard';
+import { FinanceAdmin } from '@/screens/FinanceAdmin';
+import { BannerScreen } from '@/screens/BannerScreen';
 
-type MoreView = 'menu' | 'receipts' | 'transfers' | 'reports' | 'audit' | 'settings' | 'customers';
+type MoreView = 'menu' | 'receipts' | 'transfers' | 'reports' | 'audit' | 'settings' | 'customers' | 'finance' | 'expenses' | 'reconciliation' | 'fin_settings' | 'banners';
 
 export function MoreScreen({ onNavigate }: { onNavigate: (tab: NavTab) => void }) {
   const { profile } = useAuth();
@@ -24,13 +27,23 @@ export function MoreScreen({ onNavigate }: { onNavigate: (tab: NavTab) => void }
   if (view === 'audit') return <AuditScreen onBack={() => setView('menu')} />;
   if (view === 'settings') return <SettingsScreen onBack={() => setView('menu')} />;
   if (view === 'customers') return <CustomersScreen onBack={() => setView('menu')} />;
+  if (view === 'finance') return <FinanceDashboard onBack={() => setView('menu')} />;
+  if (view === 'expenses') return <FinanceAdmin tab="expenses" onBack={() => setView('menu')} />;
+  if (view === 'reconciliation') return <FinanceAdmin tab="reconciliation" onBack={() => setView('menu')} />;
+  if (view === 'fin_settings') return <FinanceAdmin tab="settings" onBack={() => setView('menu')} />;
+  if (view === 'banners') return <BannerScreen onBack={() => setView('menu')} />;
 
   const items: { label: string; icon: LucideIcon; view: MoreView; desc: string; staffOnly?: boolean }[] = [
+    { label: 'Profit & Finance', icon: TrendingUp, view: 'finance', desc: 'Commission, costs & net profit', staffOnly: true },
+    { label: 'Banner Inventory', icon: ImageIcon, view: 'banners', desc: 'Banner stock & distribution' },
     { label: 'Receipts', icon: Receipt, view: 'receipts', desc: 'Stock received & batch history', staffOnly: true },
     { label: 'Transfers', icon: ArrowLeftRight, view: 'transfers', desc: 'Dispatch & delivery confirmations' },
     { label: 'Customers', icon: Users, view: 'customers', desc: 'Customer records' },
     { label: 'Reports', icon: FileText, view: 'reports', desc: 'Download CSV reports', staffOnly: true },
     { label: 'Audit Trail', icon: Shield, view: 'audit', desc: 'Movement ledger & corrections', staffOnly: true },
+    { label: 'Business Expenses', icon: Wallet, view: 'expenses', desc: 'Operating expense records', staffOnly: true },
+    { label: 'Commission Reconciliation', icon: Landmark, view: 'reconciliation', desc: 'Match bank payments to sales', staffOnly: true },
+    { label: 'Financial Settings', icon: ReceiptText, view: 'fin_settings', desc: 'Prices, commission & rates', staffOnly: true },
     { label: 'Settings', icon: SettingsIcon, view: 'settings', desc: 'Locations, users & account', staffOnly: true },
   ];
 

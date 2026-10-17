@@ -5,6 +5,8 @@ import { MAPPING_LABELS, MAPPING_COLORS, formatDate, formatCurrency, generateCod
 import { useAuth } from '@/context/AuthContext';
 import { ShoppingCart, Plus, FileDown, Search, X, User } from 'lucide-react';
 import { ScanButton } from '@/components/ScanButton';
+import { recordSaleFinanceSafe, type FinancePrefs } from '@/lib/finance';
+import { loadBannerTypesForIssue, BannerIssueSection } from '@/screens/BannerShared';
 
 export function SalesScreen() {
   const { profile } = useAuth();
@@ -126,6 +128,8 @@ function NewSaleModal({ onClose, onDone }: { onClose: () => void; onDone: () => 
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [fin, setFin] = useState<FinancePrefs>({ deliveryAmount: 0, deliveryRecipient: '', otherExpense: 0, deliveryNote: '' });
+  const [bannerIssue, setBannerIssue] = useState<{ enabled: boolean; typeId: string; qty: number }>({ enabled: false, typeId: '', qty: 1 });
 
   useEffect(() => {
     // Load sellable terminals
@@ -228,6 +232,25 @@ function NewSaleModal({ onClose, onDone }: { onClose: () => void; onDone: () => 
       });
     }
 
+    // Financial record (delivery cost + other expense). Atomic RPC, idempotent per sale.
+    await recordSaleFinanceSafe(saleId, fin);
+
+    // Banner issued with this sale (atomic RPC, idempotent per sale+type).
+    if (bannerIssue.enabled && bannerIssue.typeId) {
+      const { error: bErr } = await supabase.rpc('issue_banner_with_sale', {
+        p_sale_id: saleId,
+        p_banner_type_id: bannerIssue.typeId,
+        p_quantity: Math.max(1, Math.floor(bannerIssue.qty || 1)),
+        p_agent_id: selectedTerminal.agent_id ?? (isFieldAgent ? profile?.agent_id : null),
+      });
+      if (bErr) {
+        // The sale itself succeeded — surface the banner failure but do not roll back the sale.
+        setError(`Sale recorded, but the banner could not be issued: ${bErr.message}. You can issue it from the sale details later.`);
+        setBusy(false);
+        return;
+      }
+    }
+
     onDone();
     onClose();
     setBusy(false);
@@ -290,6 +313,23 @@ function NewSaleModal({ onClose, onDone }: { onClose: () => void; onDone: () => 
           <Select label="Channel" value={channel} onChange={setChannel} options={[{ value: 'direct', label: 'Direct' }, { value: 'agent', label: 'Agent' }, { value: 'partner', label: 'Partner' }]} />
         </div>
         <Textarea label="Notes" value={notes} onChange={setNotes} rows={2} />
+
+        {/* Delivery cost & attributable expenses */}
+        <div className="rounded-lg border border-slate-200 p-3">
+          <p className="mb-2 text-sm font-semibold text-slate-700">Delivery Cost & Expenses</p>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Agent Delivery Cost (₦)" value={String(fin.deliveryAmount || '')} onChange={(v) => setFin({ ...fin, deliveryAmount: parseFloat(v) || 0 })} type="number" placeholder="0.00" />
+            <Input label="Paid To (recipient)" value={fin.deliveryRecipient} onChange={(v) => setFin({ ...fin, deliveryRecipient: v })} placeholder="Delivery person" />
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <Input label="Other Attributable Expense (₦)" value={String(fin.otherExpense || '')} onChange={(v) => setFin({ ...fin, otherExpense: parseFloat(v) || 0 })} type="number" placeholder="0.00" />
+            <Input label="Expense / Delivery Note" value={fin.deliveryNote} onChange={(v) => setFin({ ...fin, deliveryNote: v })} placeholder="Optional note" />
+          </div>
+        </div>
+
+        <BannerIssueSection value={bannerIssue} onChange={setBannerIssue} />
+
+        {error && <ErrorBanner message={error} />}
 
         {error && <ErrorBanner message={error} />}
         <div className="flex gap-2">

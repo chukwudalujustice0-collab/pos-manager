@@ -226,3 +226,190 @@ export interface AuditEvent {
   details: Record<string, unknown> | null;
   created_at: string;
 }
+
+// ===================== Finance module types =====================
+
+export type CommissionStatus = 'pending' | 'received' | 'disputed';
+export type PayStatus = 'unpaid' | 'pending' | 'paid';
+
+export interface FinanceSettings {
+  id: number;
+  selling_price: number;
+  commission_per_terminal: number;
+  currency: string;
+  recognition_rule: 'on_sale_confirmed' | 'on_eligibility' | 'on_payment';
+  delivery_rate_per_agent: Record<string, number>;
+  effective_from: string;
+  updated_by: string | null;
+  updated_at: string;
+}
+
+export interface SaleFinance {
+  id: string;
+  sale_id: string;
+  terminal_id: string | null;
+  serial_number: string | null;
+  agent_id: string | null;
+  sale_date: string;
+  selling_price: number | null;
+  commission_rate: number;
+  commission_earned: number;
+  commission_status: CommissionStatus;
+  commission_paid_amount: number;
+  delivery_amount: number;
+  delivery_recipient: string | null;
+  delivery_status: PayStatus;
+  delivery_paid_date: string | null;
+  delivery_payment_ref: string | null;
+  delivery_note: string | null;
+  other_expense: number;
+  gross_margin: number;
+  net_profit: number;
+  recorded_by: string | null;
+  created_at: string;
+  updated_at: string;
+  agent?: Agent | null;
+  sale?: Sale | null;
+}
+
+export interface Expense {
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  date_incurred: string;
+  status: PayStatus;
+  payment_ref: string | null;
+  sale_id: string | null;
+  terminal_id: string | null;
+  agent_id: string | null;
+  receipt_batch_id: string | null;
+  location_id: string | null;
+  attachment_url: string | null;
+  recorded_by: string | null;
+  created_at: string;
+  agent?: Agent | null;
+}
+
+export interface CommissionPayment {
+  id: string;
+  payment_reference: string;
+  amount: number;
+  payment_date: string;
+  payer: string;
+  notes: string | null;
+  recorded_by: string | null;
+  created_at: string;
+}
+
+export interface FinanceRate {
+  id: string;
+  selling_price: number;
+  commission_per_terminal: number;
+  agent_id: string | null;
+  effective_from: string;
+  created_at: string;
+}
+
+// ===================== Banner module types =====================
+
+export interface BannerType {
+  id: string;
+  name: string;
+  sku: string | null;
+  notes: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface BannerReceipt {
+  id: string;
+  receipt_code: string;
+  supplier: string;
+  delivery_ref: string | null;
+  date_received: string;
+  location_id: string | null;
+  notes: string | null;
+  created_at: string;
+  location?: Location | null;
+}
+
+export interface BannerReceiptItem {
+  id: string;
+  receipt_id: string;
+  banner_type_id: string;
+  qty_expected: number;
+  qty_received: number;
+  notes: string | null;
+  banner_type?: BannerType;
+}
+
+export interface BannerTransfer {
+  id: string;
+  transfer_code: string;
+  banner_type_id: string;
+  source_location_id: string | null;
+  dest_agent_id: string | null;
+  dest_location_id: string | null;
+  qty_dispatched: number;
+  qty_accepted: number;
+  qty_disputed: number;
+  status: 'draft' | 'dispatched' | 'in_transit' | 'received' | 'exception';
+  dispatch_date: string | null;
+  received_date: string | null;
+  waybill_ref: string | null;
+  notes: string | null;
+  created_at: string;
+  banner_type?: BannerType;
+  dest_agent?: Agent | null;
+  source_location?: Location | null;
+}
+
+export type BannerMovementType =
+  | 'receipt' | 'transfer_out' | 'transfer_in' | 'issue_with_sale'
+  | 'return' | 'damage' | 'missing' | 'adjustment';
+
+export interface BannerMovement {
+  id: string;
+  movement_type: BannerMovementType;
+  banner_type_id: string;
+  quantity: number;
+  agent_id: string | null;
+  location_id: string | null;
+  sale_id: string | null;
+  terminal_id: string | null;
+  transfer_id: string | null;
+  receipt_id: string | null;
+  reference: string | null;
+  reason: string | null;
+  performed_by: string | null;
+  created_at: string;
+  banner_type?: BannerType;
+  agent?: Agent | null;
+  location?: Location | null;
+}
+
+export interface BannerBalance {
+  id: string;
+  banner_type_id: string;
+  agent_id: string | null;
+  location_id: string | null;
+  quantity: number;
+  updated_at: string;
+  banner_type?: BannerType;
+  agent?: Agent | null;
+  location?: Location | null;
+}
+
+export interface BannerIssueLog {
+  id: string;
+  sale_id: string;
+  terminal_id: string | null;
+  agent_id: string | null;
+  banner_type_id: string;
+  quantity: number;
+  issued_at: string;
+  banner_type?: BannerType;
+  agent?: Agent | null;
+  terminal?: Terminal | null;
+}
