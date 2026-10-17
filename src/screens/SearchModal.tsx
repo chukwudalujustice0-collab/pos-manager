@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { supabase, type Terminal } from '@/lib/supabase';
 import { Modal, LoadingSpinner, EmptyState } from '@/components/ui';
 import { STATUS_LABELS, STATUS_COLORS } from '@/lib/utils';
-import { Search } from 'lucide-react';
+import { Search, ScanLine } from 'lucide-react';
+import { SingleScanModal } from '@/screens/SingleScanModal';
 import { TerminalDetailModal } from '@/screens/TerminalDetailModal';
 
 export function SearchModal({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState('');
+  const [scanOpen, setScanOpen] = useState(false);
   const [results, setResults] = useState<Terminal[]>([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Terminal | null>(null);
@@ -40,8 +42,14 @@ export function SearchModal({ onClose }: { onClose: () => void }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search serial number, model…"
-              className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <button
+              onClick={() => setScanOpen(true)}
+              className="absolute right-2 top-1.5 flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700"
+            >
+              <ScanLine className="h-3.5 w-3.5" /> Scan
+            </button>
           </div>
 
           {loading && <LoadingSpinner />}
@@ -76,6 +84,13 @@ export function SearchModal({ onClose }: { onClose: () => void }) {
         </div>
       </Modal>
       {selected && <TerminalDetailModal terminal={selected} onClose={() => setSelected(null)} onChanged={() => {}} />}
+      {scanOpen && (
+        <SingleScanModal
+          open={scanOpen}
+          onClose={() => setScanOpen(false)}
+          onResult={(v) => { setQuery(v); setScanOpen(false); }}
+        />
+      )}
     </>
   );
 }

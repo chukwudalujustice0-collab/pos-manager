@@ -2,7 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase, type Profile, type Location } from '@/lib/supabase';
 import { Card, Button, Modal, Input, Select, LoadingSpinner, EmptyState, ErrorBanner } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
-import { Settings as SettingsIcon, ChevronLeft, Plus, MapPin, UserCog } from 'lucide-react';
+import { DEFAULT_RULES, loadSerialRules } from '@/lib/ocr';
+import type { SerialRules } from '@/lib/scanner-types';
+import { Settings as SettingsIcon, ChevronLeft, Plus, MapPin, UserCog, ScanLine } from 'lucide-react';
 
 const ROLE_OPTIONS = [
   { value: 'owner', label: 'Owner (full access)' },
@@ -14,7 +16,7 @@ const ROLE_OPTIONS = [
 export function SettingsScreen({ onBack }: { onBack: () => void }) {
   const { profile } = useAuth();
   const isOwner = profile?.role === 'owner';
-  const [tab, setTab] = useState<'locations' | 'users'>('locations');
+  const [tab, setTab] = useState<'locations' | 'users' | 'serial'>('locations');
 
   return (
     <div className="space-y-4">
@@ -34,10 +36,16 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
             User Management
           </button>
         )}
+        {isOwner && (
+          <button onClick={() => setTab('serial')} className={`px-3 py-2 text-sm font-medium ${tab === 'serial' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-slate-500'}`}>
+            Serial Format
+          </button>
+        )}
       </div>
 
       {tab === 'locations' && <LocationsTab />}
       {tab === 'users' && isOwner && <UsersTab />}
+      {tab === 'serial' && isOwner && <SerialRulesTab />}
     </div>
   );
 }
@@ -212,5 +220,75 @@ function EditUserModal({ user, agents, onClose, onDone }: { user: Profile; agent
         </div>
       </div>
     </Modal>
+  );
+}
+
+function SerialRulesTab() {
+  const [rules, setRules] = useState<SerialRules | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadSerialRules().then(setRules);
+  }, []);
+
+  if (!rules) return <LoadingSpinner />;
+
+  const save = async () => {
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase
+      .from('app_settings')
+      .upsert({ key: 'serial_rules', value: rules, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    if (error) setError(error.message);
+    else { setSaved(true); setTimeout(() => setSaved(false), 2000); }
+    setBusy(false);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+        <p className="flex items-center gap-1.5 font-medium"><ScanLine className="h-4 w-4" /> Serial number format</p>
+        <p className="mt-1 text-xs">These rules define what counts as a valid serial number when scanning with the camera and when typing manually. Check one of your actual POS labels and match the format here.</p>
+      </div>
+      <Input
+        label="Prefix (leave empty for none)"
+        value={rules.prefix}
+        onChange={(v) => setRules({ ...rules, prefix: v.toUpperCase() })}
+        placeholder="e.g. WEMA"
+      />
+      <div className="grid grid-cols-2 gap-3">
+        <Input
+          label="Minimum length (after prefix)"
+          type="number"
+          value={String(rules.min_length)}
+          onChange={(v) => setRules({ ...rules, min_length: parseInt(v) || 0 })}
+        />
+        <Input
+          label="Maximum length (after prefix)"
+          type="number"
+          value={String(rules.max_length)}
+          onChange={(v) => setRules({ ...rules, max_length: parseInt(v) || 0 })}
+        />
+      </div>
+      <Select
+        label="Characters allowed after prefix"
+        value={rules.charset}
+        onChange={(v) => setRules({ ...rules, charset: v as SerialRules['charset'] })}
+        options={[
+          { value: 'alphanumeric', label: 'Letters and numbers' },
+          { value: 'digits', label: 'Numbers only' },
+          { value: 'letters', label: 'Letters only' },
+        ]}
+      />
+      <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
+        <p className="font-medium text-slate-600">Preview of a valid serial:</p>
+        <p className="mt-1 font-mono">{rules.prefix}{'X'.repeat(Math.max(4, rules.min_length))}</p>
+      </div>
+      {error && <ErrorBanner message={error} />}
+      {saved && <p className="text-sm text-emerald-600">Saved.</p>}
+      <Button onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save Serial Format'}</Button>
+    </div>
   );
 }

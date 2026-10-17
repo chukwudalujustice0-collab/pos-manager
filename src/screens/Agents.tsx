@@ -3,7 +3,8 @@ import { supabase, type Agent, type Terminal, type Transfer } from '@/lib/supaba
 import { Card, Button, LoadingSpinner, EmptyState, Modal, Input, Select, Textarea, ErrorBanner, StatusChip } from '@/components/ui';
 import { TRANSFER_STATUS_LABELS, TRANSFER_STATUS_COLORS, formatDate, generateCode, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { Users, Plus, ArrowRight, Package, User as UserIcon, Search, X } from 'lucide-react';
+import { Users, Plus, ArrowRight, Package, User as UserIcon, Search, X, ScanLine } from 'lucide-react';
+import { ScanButton } from '@/components/ScanButton';
 
 export function AgentsScreen() {
   const { profile } = useAuth();
@@ -423,6 +424,9 @@ function TransferModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
             placeholder="Filter serial number…"
             className="mb-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <div className="mb-2">
+            <ScanButton onScan={(v) => setSearch(v)} />
+          </div>
           {available.length === 0 ? (
             <EmptyState icon={<Package className="h-10 w-10" />} title="No available terminals" subtitle="All terminals are assigned or sold." />
           ) : (

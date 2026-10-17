@@ -4,6 +4,7 @@ import { Card, Button, LoadingSpinner, EmptyState, Modal, Input, Select, Textare
 import { MAPPING_LABELS, MAPPING_COLORS, formatDate, formatCurrency, generateCode, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { ShoppingCart, Plus, FileDown, Search, X, User } from 'lucide-react';
+import { ScanButton } from '@/components/ScanButton';
 
 export function SalesScreen() {
   const { profile } = useAuth();
@@ -244,6 +245,9 @@ function NewSaleModal({ onClose, onDone }: { onClose: () => void; onDone: () => 
             placeholder="Search serial number…"
             className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <div className="mt-2">
+            <ScanButton onScan={(v) => setSerialSearch(v)} />
+          </div>
           {!selectedTerminal && filtered.length > 0 && (
             <div className="mt-1 max-h-40 space-y-1 overflow-y-auto rounded-lg border border-slate-200 p-1">
               {filtered.slice(0, 20).map((t) => (

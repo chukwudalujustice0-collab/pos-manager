@@ -3,9 +3,11 @@ import { supabase, type Terminal, type TerminalStatus } from '@/lib/supabase';
 import { Card, Button, LoadingSpinner, EmptyState, StatusChip, Modal, Input, Select, Textarea, ErrorBanner } from '@/components/ui';
 import { STATUS_LABELS, STATUS_COLORS, formatDate, classNames, generateCode } from '@/lib/utils';
 import { parseSerialInput, isValidSerial } from '@/lib/csv';
-import { Boxes, Plus, Upload, FileDown, Search, X } from 'lucide-react';
+import { Boxes, Plus, Upload, FileDown, Search, X, ScanLine } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { TerminalDetailModal } from '@/screens/TerminalDetailModal';
+import { BulkScanModal } from '@/screens/BulkScanModal';
+import { ScanButton } from '@/components/ScanButton';
 
 type FilterStatus = TerminalStatus | 'all' | 'pending_details';
 
@@ -17,6 +19,8 @@ export function InventoryScreen() {
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [search, setSearch] = useState('');
   const [importOpen, setImportOpen] = useState(false);
+  const [scanOpen, setScanOpen] = useState(false);
+  const [scanPrefill, setScanPrefill] = useState<string[] | null>(null);
   const [singleOpen, setSingleOpen] = useState(false);
   const [selected, setSelected] = useState<Terminal | null>(null);
 
@@ -100,6 +104,9 @@ export function InventoryScreen() {
             <Button size="sm" onClick={() => setImportOpen(true)}>
               <Upload className="h-4 w-4" /> Import
             </Button>
+            <Button size="sm" variant="secondary" onClick={() => { setScanPrefill(null); setScanOpen(true); }}>
+              <ScanLine className="h-4 w-4" /> Scan Serial Numbers
+            </Button>
           </div>
         )}
       </div>
@@ -162,16 +169,34 @@ export function InventoryScreen() {
         </div>
       )}
 
-      {importOpen && <BulkImportModal onClose={() => setImportOpen(false)} onDone={load} />}
+      {importOpen && (
+        <BulkImportModal
+          onClose={() => { setImportOpen(false); setScanPrefill(null); }}
+          onDone={() => { setImportOpen(false); setScanPrefill(null); load(); }}
+          prefillSerials={scanPrefill}
+          onOpenScanner={() => { setScanPrefill(null); setImportOpen(false); setScanOpen(true); }}
+        />
+      )}
+      {scanOpen && (
+        <BulkScanModal
+          open={scanOpen}
+          onClose={() => setScanOpen(false)}
+          onConfirm={(serials) => {
+            setScanPrefill(serials);
+            setScanOpen(false);
+            setImportOpen(true);
+          }}
+        />
+      )}
       {singleOpen && <SingleTerminalModal onClose={() => setSingleOpen(false)} onDone={load} />}
       {selected && <TerminalDetailModal terminal={selected} onClose={() => setSelected(null)} onChanged={load} />}
     </div>
   );
 }
 
-function BulkImportModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+function BulkImportModal({ onClose, onDone, prefillSerials, onOpenScanner }: { onClose: () => void; onDone: () => void; prefillSerials?: string[] | null; onOpenScanner: () => void }) {
   const { user } = useAuth();
-  const [rawText, setRawText] = useState('');
+  const [rawText, setRawText] = useState(prefillSerials?.length ? prefillSerials.join('\n') : '');
   const [supplier, setSupplier] = useState('');
   const [deliveryRef, setDeliveryRef] = useState('');
   const [locationId, setLocationId] = useState('');
@@ -186,6 +211,14 @@ function BulkImportModal({ onClose, onDone }: { onClose: () => void; onDone: () 
   useEffect(() => {
     supabase.from('locations').select('id, name').eq('is_active', true).then(({ data }) => setLocations(data ?? []));
   }, []);
+
+  // If serials came from the scanner review screen, validate immediately
+  useEffect(() => {
+    if (prefillSerials && prefillSerials.length > 0) {
+      parseAndCheck();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefillSerials]);
 
   const parseAndCheck = async () => {
     setChecking(true);
@@ -361,6 +394,9 @@ function BulkImportModal({ onClose, onDone }: { onClose: () => void; onDone: () 
           rows={8}
           required
         />
+        <Button variant="secondary" onClick={onOpenScanner} className="w-full">
+          <ScanLine className="h-4 w-4" /> Scan Serial Numbers
+        </Button>
         <Textarea label="Notes" value={notes} onChange={setNotes} placeholder="Optional notes" rows={2} />
 
         {error && <ErrorBanner message={error} />}
@@ -415,6 +451,7 @@ function BulkImportModal({ onClose, onDone }: { onClose: () => void; onDone: () 
 function SingleTerminalModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
   const { user } = useAuth();
   const [serial, setSerial] = useState('');
+  const [scanModalOpen, setScanModalOpen] = useState(false);
   const [model, setModel] = useState('');
   const [supplier, setSupplier] = useState('');
   const [locationId, setLocationId] = useState('');
@@ -484,7 +521,13 @@ function SingleTerminalModal({ onClose, onDone }: { onClose: () => void; onDone:
   return (
     <Modal open={true} onClose={onClose} title="Add Single Terminal">
       <div className="space-y-3">
-        <Input label="Serial Number" value={serial} onChange={setSerial} placeholder="WEMA001234" required />
+        <div className="flex items-end gap-2">
+          <div className="flex-1"><Input label="Serial Number" value={serial} onChange={setSerial} placeholder="WEMA001234" required /></div>
+          <ScanButton onScan={(v) => setSerial(v)} />
+        </div>
+        {serial && !isValidSerial(serial) && (
+          <p className="text-xs text-amber-600">Unusual format — please double-check against the label.</p>
+        )}
         <Input label="Model" value={model} onChange={setModel} placeholder="e.g. PAX D210" />
         <Input label="Supplier" value={supplier} onChange={setSupplier} placeholder="e.g. Wema Bank" />
         <Select label="Location" value={locationId} onChange={setLocationId} placeholder="Select location" options={locations.map((l) => ({ value: l.id, label: l.name }))} />
