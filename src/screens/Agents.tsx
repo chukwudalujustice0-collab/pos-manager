@@ -3,7 +3,7 @@ import { supabase, type Agent, type Terminal, type Transfer } from '@/lib/supaba
 import { Card, Button, LoadingSpinner, EmptyState, Modal, Input, Select, Textarea, ErrorBanner, StatusChip } from '@/components/ui';
 import { TRANSFER_STATUS_LABELS, TRANSFER_STATUS_COLORS, formatDate, generateCode, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { Users, Plus, ArrowRight, Package, User as UserIcon, Search, X, ScanLine } from 'lucide-react';
+import { Users, Plus, ArrowRight, Package, User as UserIcon, Search, X, ScanLine, Copy, Check } from 'lucide-react';
 import { ScanButton } from '@/components/ScanButton';
 
 export function AgentsScreen() {
@@ -130,6 +130,9 @@ function AddAgentModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
   const [area, setArea] = useState('');
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
+  const [issuePassKey, setIssuePassKey] = useState(false);
+  const [generatedKey, setGeneratedKey] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -150,10 +153,60 @@ function AddAgentModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
       notes: notes || null,
     });
     if (e) { setError(e.message); setBusy(false); return; }
+
+    if (issuePassKey && phone) {
+      const { data, error: invErr } = await supabase.rpc('create_invitation', {
+        p_phone: phone.trim(),
+        p_role: 'field_agent',
+        p_expires_at: null,
+        p_full_name: fullName.trim() || null,
+      });
+      if (invErr) {
+        setError(`Agent saved, but pass key generation failed: ${invErr.message}`);
+        setBusy(false);
+        return;
+      }
+      const row = data as { pass_key?: string } | null;
+      setGeneratedKey(row?.pass_key ?? null);
+      setBusy(false);
+      return;
+    }
+
     onDone();
     onClose();
     setBusy(false);
   };
+
+  const copyKey = () => {
+    if (generatedKey) {
+      navigator.clipboard.writeText(generatedKey);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  if (generatedKey) {
+    return (
+      <Modal open={true} onClose={() => { onDone(); onClose(); }} title="Agent Added + Pass Key Generated">
+        <div className="space-y-4">
+          <div className="rounded-lg bg-emerald-50 p-4 text-center">
+            <p className="text-sm font-medium text-emerald-700">{fullName} was added and an invitation pass key was generated.</p>
+          </div>
+          <div>
+            <p className="mb-1 text-xs text-slate-500">Share this pass key with {phone}:</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-mono text-slate-800 break-all">{generatedKey}</code>
+              <button onClick={copyKey} className="rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-50" title="Copy">
+                {copied ? <Check className="h-5 w-5 text-emerald-600" /> : <Copy className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+          <p className="text-xs text-slate-400">When the agent signs up with this key and their phone number, their account will be linked to the agent record you just created — no duplicate will be created.</p>
+          <Button onClick={() => { onDone(); onClose(); }} className="w-full">Done</Button>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal open={true} onClose={onClose} title="Add Field Agent" size="lg">
@@ -173,6 +226,19 @@ function AddAgentModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
         </div>
         <Textarea label="Address / Landmark" value={address} onChange={setAddress} rows={2} />
         <Textarea label="Notes" value={notes} onChange={setNotes} rows={2} />
+        <label className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
+          <input
+            type="checkbox"
+            checked={issuePassKey}
+            onChange={(e) => setIssuePassKey(e.target.checked)}
+            disabled={!phone}
+            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600"
+          />
+          <span>
+            Generate an invitation pass key for this agent
+            {!phone && <span className="block text-xs text-amber-600">Enter a phone number to enable this.</span>}
+          </span>
+        </label>
         {error && <ErrorBanner message={error} />}
         <div className="flex gap-2">
           <Button onClick={submit} disabled={busy || !fullName} className="flex-1">{busy ? 'Saving…' : 'Add Agent'}</Button>

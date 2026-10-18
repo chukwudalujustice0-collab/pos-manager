@@ -44,6 +44,21 @@ export interface Profile {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  can_review_kyc?: boolean;
+}
+
+export interface Invitation {
+  id: string;
+  pass_key: string;
+  phone: string;
+  role: UserRole;
+  created_by: string | null;
+  expires_at: string | null;
+  status: 'active' | 'redeemed' | 'expired' | 'revoked';
+  redeemed_by: string | null;
+  redeemed_at: string | null;
+  full_name: string | null;
+  created_at: string;
 }
 
 export interface Location {

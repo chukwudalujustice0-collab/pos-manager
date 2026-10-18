@@ -34,7 +34,7 @@ export function AppShell({ active, onNavigate, onOpenSearch, onOpenNotifications
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-700">
             <Boxes className="h-5 w-5 text-white" />
           </div>
-          <span className="text-sm font-semibold text-slate-800">POS Manager</span>
+          <span className="text-sm font-semibold text-slate-800">Wema Super Agent</span>
         </div>
         <div className="flex items-center gap-1">
           <button

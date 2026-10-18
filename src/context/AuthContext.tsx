@@ -8,9 +8,18 @@ interface AuthContextValue {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
+  signUp: (params: SignUpParams) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+}
+
+interface SignUpParams {
+  email: string;
+  password: string;
+  fullName: string;
+  phone: string;
+  passKey: string;
+  referralCode?: string;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -71,14 +80,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async ({ email, password, fullName, phone, passKey, referralCode }: SignUpParams) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName, role: 'owner' } },
+      options: { data: { full_name: fullName, phone } },
     });
     if (error) return { error: error.message };
     if (data.user) {
+      // The handle_new_user trigger creates a field_agent profile. Now redeem
+      // the invitation to set the role and auto-link an existing agent record
+      // matched by phone or email.
+      const { error: redeemErr } = await supabase.rpc('redeem_invitation', {
+        p_pass_key: passKey,
+        p_phone: phone,
+        p_referral_code: referralCode ?? null,
+      });
+      if (redeemErr) {
+        return { error: redeemErr.message };
+      }
       await loadProfile(data.user.id);
     }
     return { error: null };

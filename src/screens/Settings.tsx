@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
-import { supabase, type Profile, type Location } from '@/lib/supabase';
+import { supabase, type Profile, type Location, type Invitation } from '@/lib/supabase';
 import { Card, Button, Modal, Input, Select, LoadingSpinner, EmptyState, ErrorBanner } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { DEFAULT_RULES, loadSerialRules } from '@/lib/ocr';
 import type { SerialRules } from '@/lib/scanner-types';
-import { Settings as SettingsIcon, ChevronLeft, Plus, MapPin, UserCog, ScanLine } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
+import { Settings as SettingsIcon, ChevronLeft, Plus, MapPin, UserCog, ScanLine, KeyRound, Copy, Check, Ban } from 'lucide-react';
 
 const ROLE_OPTIONS = [
   { value: 'owner', label: 'Owner (full access)' },
@@ -16,7 +17,8 @@ const ROLE_OPTIONS = [
 export function SettingsScreen({ onBack }: { onBack: () => void }) {
   const { profile } = useAuth();
   const isOwner = profile?.role === 'owner';
-  const [tab, setTab] = useState<'locations' | 'users' | 'serial'>('locations');
+  const isStaff = profile?.role !== 'field_agent';
+  const [tab, setTab] = useState<'locations' | 'users' | 'serial' | 'invitations'>('locations');
 
   return (
     <div className="space-y-4">
@@ -41,11 +43,17 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
             Serial Format
           </button>
         )}
+        {isStaff && (
+          <button onClick={() => setTab('invitations')} className={`px-3 py-2 text-sm font-medium ${tab === 'invitations' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-slate-500'}`}>
+            Invitations
+          </button>
+        )}
       </div>
 
       {tab === 'locations' && <LocationsTab />}
       {tab === 'users' && isOwner && <UsersTab />}
       {tab === 'serial' && isOwner && <SerialRulesTab />}
+      {tab === 'invitations' && isStaff && <InvitationsTab />}
     </div>
   );
 }
@@ -290,5 +298,175 @@ function SerialRulesTab() {
       {saved && <p className="text-sm text-emerald-600">Saved.</p>}
       <Button onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save Serial Format'}</Button>
     </div>
+  );
+}
+
+function InvitationsTab() {
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [addOpen, setAddOpen] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('invitations')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setInvitations((data ?? []) as Invitation[]);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const revoke = async (id: string) => {
+    const { error } = await supabase.rpc('revoke_invitation', { p_invitation_id: id });
+    if (!error) load();
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-700">
+        <p className="flex items-center gap-1.5 font-medium"><KeyRound className="h-4 w-4" /> Invitation Pass Keys</p>
+        <p className="mt-1">Generate a pass key for each person you want to invite. Share the key and your app URL with them. The key is bound to a phone number and can only be used once. When the invitee signs up, their account is automatically linked to an existing agent record that matches their phone or email.</p>
+      </div>
+      <Button size="sm" onClick={() => setAddOpen(true)}><Plus className="h-4 w-4" /> Generate Pass Key</Button>
+
+      {loading ? <LoadingSpinner /> : invitations.length === 0 ? (
+        <EmptyState icon={<KeyRound className="h-10 w-10" />} title="No invitations yet" subtitle="Generate a pass key to invite a team member or agent." />
+      ) : (
+        <div className="space-y-2">
+          {invitations.map((inv) => (
+            <InvitationCard key={inv.id} inv={inv} onRevoke={() => revoke(inv.id)} />
+          ))}
+        </div>
+      )}
+      {addOpen && <CreateInvitationModal onClose={() => setAddOpen(false)} onDone={load} />}
+    </div>
+  );
+}
+
+function InvitationCard({ inv, onRevoke }: { inv: Invitation; onRevoke: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const statusColors: Record<string, string> = {
+    active: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    redeemed: 'bg-slate-100 text-slate-500 border-slate-200',
+    expired: 'bg-amber-100 text-amber-700 border-amber-200',
+    revoked: 'bg-red-100 text-red-700 border-red-200',
+  };
+
+  const copyKey = () => {
+    navigator.clipboard.writeText(inv.pass_key);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Card className="p-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize ${statusColors[inv.status] ?? statusColors.active}`}>{inv.status}</span>
+            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700 capitalize">{inv.role.replace('_', ' ')}</span>
+          </div>
+          <p className="mt-1.5 text-sm font-medium text-slate-800">{inv.full_name || 'Unnamed invitee'}</p>
+          <p className="text-xs text-slate-400">{inv.phone}</p>
+          <div className="mt-2 flex items-center gap-2">
+            <code className="flex-1 truncate rounded bg-slate-100 px-2 py-1 text-xs font-mono text-slate-700">{inv.pass_key}</code>
+            <button onClick={copyKey} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600" title="Copy pass key">
+              {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+            </button>
+          </div>
+          {inv.redeemed_at && <p className="mt-1 text-xs text-slate-400">Redeemed {formatDate(inv.redeemed_at)}</p>}
+        </div>
+        {inv.status === 'active' && (
+          <button onClick={onRevoke} className="rounded-lg p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600" title="Revoke">
+            <Ban className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+function CreateInvitationModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+  const [phone, setPhone] = useState('');
+  const [role, setRole] = useState('field_agent');
+  const [fullName, setFullName] = useState('');
+  const [expiresIn, setExpiresIn] = useState('');
+  const [generated, setGenerated] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const submit = async () => {
+    setBusy(true);
+    setError(null);
+    const expiresAt = expiresIn
+      ? new Date(Date.now() + parseInt(expiresIn) * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+    const { data, error: rpcErr } = await supabase.rpc('create_invitation', {
+      p_phone: phone.trim(),
+      p_role: role,
+      p_expires_at: expiresAt,
+      p_full_name: fullName.trim() || null,
+    });
+    if (rpcErr) {
+      setError(rpcErr.message);
+      setBusy(false);
+      return;
+    }
+    const row = data as { pass_key?: string } | null;
+    setGenerated(row?.pass_key ?? null);
+    setBusy(false);
+  };
+
+  const copyKey = () => {
+    if (generated) {
+      navigator.clipboard.writeText(generated);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  if (generated) {
+    return (
+      <Modal open={true} onClose={onClose} title="Pass Key Generated">
+        <div className="space-y-4">
+          <div className="rounded-lg bg-emerald-50 p-4 text-center">
+            <p className="text-sm font-medium text-emerald-700">Invitation pass key created successfully!</p>
+          </div>
+          <div>
+            <p className="mb-1 text-xs text-slate-500">Share this pass key with {phone}:</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-mono text-slate-800 break-all">{generated}</code>
+              <button onClick={copyKey} className="rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-50" title="Copy">
+                {copied ? <Check className="h-5 w-5 text-emerald-600" /> : <Copy className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+          <p className="text-xs text-slate-400">The invitee must use this exact pass key along with the phone number {phone} when creating their account. The key works only once.</p>
+          <div className="flex gap-2">
+            <Button onClick={() => { onDone(); onClose(); }} className="flex-1">Done</Button>
+            <Button variant="outline" onClick={() => { onDone(); setGenerated(null); }}>Generate Another</Button>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+
+  return (
+    <Modal open={true} onClose={onClose} title="Generate Invitation Pass Key">
+      <div className="space-y-3">
+        <Input label="Phone Number" value={phone} onChange={setPhone} placeholder="e.g. +2348012345678" required />
+        <Input label="Full Name (optional)" value={fullName} onChange={setFullName} placeholder="Invitee name" />
+        <Select label="Role" value={role} onChange={setRole} options={ROLE_OPTIONS} />
+        <Input label="Expires in (days, optional)" value={expiresIn} onChange={setExpiresIn} type="number" placeholder="Leave blank for no expiry" />
+        {error && <ErrorBanner message={error} />}
+        <div className="flex gap-2">
+          <Button onClick={submit} disabled={busy || !phone} className="flex-1">{busy ? 'Generating…' : 'Generate Pass Key'}</Button>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+        </div>
+      </div>
+    </Modal>
   );
 }
