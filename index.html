@@ -2,15 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>POS Distribution Management App</title>
+    <title>Wema Super Agent</title>
     <meta property="og:image" content="https://bolt.new/static/og_default.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+    <script>
+      // GitHub Pages SPA fallback: if the server served 404.html at an unknown
+      // path, bounce the browser into the app base path.
+      (function () {
+        var base = '/pos-manager/';
+        var path = window.location.pathname;
+        if (path !== base && path.indexOf(base) !== 0 && window.location.pathname !== '/pos-manager/index.html') {
+          var redirect = sessionStorage.getItem('redirect');
+          if (redirect && redirect !== path) {
+            sessionStorage.removeItem('redirect');
+            window.location.replace(base + redirect.replace(/^\/+/, ''));
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
