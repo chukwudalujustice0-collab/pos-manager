@@ -29,6 +29,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_BASE_PATH: /pos-manager/
         run: npm run build
 
       - name: Add 404 fallback

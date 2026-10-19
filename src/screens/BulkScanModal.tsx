@@ -163,10 +163,10 @@ export function BulkScanModal({
 
       {stage === 'processing' && (
         <div className="flex flex-col items-center py-10">
-          <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+          <Loader2 className="h-10 w-10 animate-spin text-purple-600" />
           <p className="mt-4 text-sm font-medium text-slate-700">Reading serial numbers…</p>
           <div className="mt-3 h-2 w-64 overflow-hidden rounded-full bg-slate-200">
-            <div className="h-full bg-blue-600 transition-all" style={{ width: `${progress}%` }} />
+            <div className="h-full bg-purple-600 transition-all" style={{ width: `${progress}%` }} />
           </div>
           <p className="mt-2 text-xs text-slate-400">Large sheets can take up to a minute on first use.</p>
         </div>
@@ -191,7 +191,7 @@ export function BulkScanModal({
           <div>
             <div className="mb-2 flex items-center justify-between">
               <h4 className="text-sm font-semibold text-slate-700">Extracted Serial Numbers</h4>
-              <button onClick={addManual} className="flex items-center gap-1 text-xs font-medium text-blue-600">
+              <button onClick={addManual} className="flex items-center gap-1 text-xs font-medium text-purple-600">
                 <Plus className="h-3.5 w-3.5" /> Add manually
               </button>
             </div>

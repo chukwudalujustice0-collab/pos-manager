@@ -334,7 +334,7 @@ function SettingsTab() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-slate-900">Financial Settings</h1>
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-700">
+      <div className="rounded-lg border border-purple-200 bg-purple-50 p-3 text-xs text-purple-700">
         Changes apply to future sales only. Historical sales keep the rates recorded at sale time. A per-sale commission override can be set from the sale record.
       </div>
       <div className="grid grid-cols-2 gap-3">

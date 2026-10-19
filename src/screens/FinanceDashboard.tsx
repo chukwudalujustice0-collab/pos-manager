@@ -81,7 +81,7 @@ export function FinanceDashboard({ onBack }: { onBack?: () => void }) {
       {/* Sub-views */}
       <div className="flex gap-1 text-sm">
         {(['summary', 'transactions', 'agents', 'daily'] as const).map((v) => (
-          <button key={v} onClick={() => setView(v)} className={classNames('rounded-lg px-3 py-1.5 font-medium capitalize', view === v ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200')}>
+          <button key={v} onClick={() => setView(v)} className={classNames('rounded-lg px-3 py-1.5 font-medium capitalize', view === v ? 'bg-purple-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200')}>
             {v}
           </button>
         ))}
@@ -152,7 +152,7 @@ function Metric({ label, value, accent, good, bad, warn }: { label: string; valu
       <p className="text-xs text-slate-400">{label}</p>
       <p className={classNames(
         'mt-1 text-base font-bold',
-        accent && 'text-blue-700',
+        accent && 'text-purple-700',
         good && 'text-emerald-700',
         bad && 'text-red-600',
         warn && !bad && 'text-amber-600',

@@ -103,8 +103,8 @@ export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal
 
         {/* Financial details */}
         {terminal.sale_id && finance && (
-          <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3">
-            <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700"><TrendingUp className="h-4 w-4 text-blue-600" /> Financial Details</p>
+          <div className="rounded-lg border border-purple-100 bg-purple-50/50 p-3">
+            <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700"><TrendingUp className="h-4 w-4 text-purple-600" /> Financial Details</p>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
               <DetailRow label="Selling Price" value={finance.selling_price != null ? `₦${Number(finance.selling_price).toLocaleString()}` : '—'} />
               <DetailRow label="Commission Earned" value={`₦${Number(finance.commission_earned).toLocaleString()}`} />
@@ -139,7 +139,7 @@ export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal
                 return (
                   <div key={m.id} className="flex gap-3">
                     <div className="flex flex-col items-center">
-                      <div className={classNames('flex h-8 w-8 items-center justify-center rounded-full', isLast ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500')}>
+                      <div className={classNames('flex h-8 w-8 items-center justify-center rounded-full', isLast ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-500')}>
                         <Icon className="h-4 w-4" />
                       </div>
                       {!isLast && <div className="w-px flex-1 bg-slate-200" />}

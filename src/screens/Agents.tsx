@@ -59,7 +59,7 @@ export function AgentsScreen() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name, code, phone…"
-          className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
         {search && (
           <button onClick={() => setSearch('')} className="absolute right-2 top-2 p-1 text-slate-400">
@@ -92,11 +92,11 @@ function AgentCard({ agent, onClick }: { agent: Agent; onClick: () => void }) {
   }, [agent.id]);
 
   return (
-    <button onClick={onClick} className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-blue-300 hover:shadow-md">
+    <button onClick={onClick} className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-purple-300 hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-            <UserIcon className="h-5 w-5 text-blue-600" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100">
+            <UserIcon className="h-5 w-5 text-purple-600" />
           </div>
           <div>
             <p className="font-medium text-slate-900">{agent.full_name}</p>
@@ -226,13 +226,13 @@ function AddAgentModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
         </div>
         <Textarea label="Address / Landmark" value={address} onChange={setAddress} rows={2} />
         <Textarea label="Notes" value={notes} onChange={setNotes} rows={2} />
-        <label className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
+        <label className="flex items-start gap-2 rounded-lg bg-purple-50 p-3 text-sm text-purple-700">
           <input
             type="checkbox"
             checked={issuePassKey}
             onChange={(e) => setIssuePassKey(e.target.checked)}
             disabled={!phone}
-            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600"
+            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-purple-600"
           />
           <span>
             Generate an invitation pass key for this agent
@@ -285,7 +285,7 @@ function AgentDetailModal({ agent, onClose }: { agent: Agent; onClose: () => voi
     <Modal open={true} onClose={onClose} title={agent.full_name} size="lg">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <StatusChip label={agent.agent_code} color="bg-blue-100 text-blue-700 border-blue-200" />
+          <StatusChip label={agent.agent_code} color="bg-purple-100 text-purple-700 border-purple-200" />
           {agent.is_active ? (
             <StatusChip label="Active" color="bg-emerald-100 text-emerald-700 border-emerald-200" />
           ) : (
@@ -302,7 +302,7 @@ function AgentDetailModal({ agent, onClose }: { agent: Agent; onClose: () => voi
         {/* Tabs */}
         <div className="flex gap-1 border-b border-slate-200">
           {(['overview', 'stock', 'history'] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={classNames('px-3 py-2 text-sm font-medium capitalize', tab === t ? 'border-b-2 border-blue-600 text-blue-700' : 'text-slate-500')}>
+            <button key={t} onClick={() => setTab(t)} className={classNames('px-3 py-2 text-sm font-medium capitalize', tab === t ? 'border-b-2 border-purple-600 text-purple-700' : 'text-slate-500')}>
               {t}
             </button>
           ))}
@@ -310,7 +310,7 @@ function AgentDetailModal({ agent, onClose }: { agent: Agent; onClose: () => voi
 
         {tab === 'overview' && (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-            <StatBox label="Current Stock" value={stats.current} color="text-blue-700" />
+            <StatBox label="Current Stock" value={stats.current} color="text-purple-700" />
             <StatBox label="Sold" value={stats.sold} color="text-violet-700" />
             <StatBox label="Returned" value={stats.returned} color="text-slate-700" />
             <StatBox label="Damaged" value={stats.damaged} color="text-red-700" />
@@ -479,7 +479,7 @@ function TransferModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
           <div className="mb-2 flex items-center justify-between">
             <label className="text-sm font-medium text-slate-700">Select Terminals ({selected.size} selected)</label>
             {available.length > 0 && (
-              <button onClick={() => setSelected(selected.size === available.length ? new Set() : new Set(available.map((t) => t.id)))} className="text-xs text-blue-600">
+              <button onClick={() => setSelected(selected.size === available.length ? new Set() : new Set(available.map((t) => t.id)))} className="text-xs text-purple-600">
                 {selected.size === available.length ? 'Deselect all' : 'Select all'}
               </button>
             )}
@@ -488,7 +488,7 @@ function TransferModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Filter serial number…"
-            className="mb-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mb-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           <div className="mb-2">
             <ScanButton onScan={(v) => setSearch(v)} />
@@ -499,7 +499,7 @@ function TransferModal({ onClose, onDone }: { onClose: () => void; onDone: () =>
             <div className="max-h-60 space-y-1 overflow-y-auto rounded-lg border border-slate-200 p-2">
               {filteredAvail.map((t) => (
                 <label key={t.id} className="flex cursor-pointer items-center gap-2 rounded p-1.5 hover:bg-slate-50">
-                  <input type="checkbox" checked={selected.has(t.id)} onChange={() => toggle(t.id)} className="h-4 w-4 rounded border-slate-300 text-blue-600" />
+                  <input type="checkbox" checked={selected.has(t.id)} onChange={() => toggle(t.id)} className="h-4 w-4 rounded border-slate-300 text-purple-600" />
                   <span className="font-mono text-sm text-slate-700">{t.serial_number}</span>
                   {t.model && <span className="text-xs text-slate-400">{t.model}</span>}
                 </label>

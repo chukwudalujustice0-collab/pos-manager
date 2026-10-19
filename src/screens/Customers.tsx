@@ -58,7 +58,7 @@ export function CustomersScreen({ onBack }: { onBack: () => void }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search name, phone, email…"
-          className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
         {search && <button onClick={() => setSearch('')} className="absolute right-2 top-2 p-1 text-slate-400"><X className="h-4 w-4" /></button>}
       </div>
@@ -71,7 +71,7 @@ export function CustomersScreen({ onBack }: { onBack: () => void }) {
             <button
               key={c.id}
               onClick={() => setSelected(c)}
-              className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm hover:border-blue-300 hover:shadow-md"
+              className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm hover:border-purple-300 hover:shadow-md"
             >
               <div className="flex items-start justify-between">
                 <div>

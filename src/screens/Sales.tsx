@@ -71,7 +71,7 @@ export function SalesScreen() {
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search serial, customer, phone…" className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search serial, customer, phone…" className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
           {search && <button onClick={() => setSearch('')} className="absolute right-2 top-2 p-1 text-slate-400"><X className="h-4 w-4" /></button>}
         </div>
         <select value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
@@ -266,7 +266,7 @@ function NewSaleModal({ onClose, onDone }: { onClose: () => void; onDone: () => 
             value={serialSearch}
             onChange={(e) => { setSerialSearch(e.target.value); setSelectedTerminal(null); }}
             placeholder="Search serial number…"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           <div className="mt-2">
             <ScanButton onScan={(v) => setSerialSearch(v)} />
@@ -282,9 +282,9 @@ function NewSaleModal({ onClose, onDone }: { onClose: () => void; onDone: () => 
             </div>
           )}
           {selectedTerminal && (
-            <div className="mt-2 rounded-lg bg-blue-50 p-2">
-              <p className="font-mono text-sm font-semibold text-blue-800">{selectedTerminal.serial_number}</p>
-              <p className="text-xs text-blue-600">{selectedTerminal.model || 'No model'} · {selectedTerminal.agent?.full_name || 'Central stock'}</p>
+            <div className="mt-2 rounded-lg bg-purple-50 p-2">
+              <p className="font-mono text-sm font-semibold text-purple-800">{selectedTerminal.serial_number}</p>
+              <p className="text-xs text-purple-600">{selectedTerminal.model || 'No model'} · {selectedTerminal.agent?.full_name || 'Central stock'}</p>
             </div>
           )}
         </div>

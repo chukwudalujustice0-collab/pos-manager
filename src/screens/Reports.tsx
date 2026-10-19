@@ -107,8 +107,8 @@ export function ReportsScreen({ onBack }: { onBack: () => void }) {
         {REPORTS.map((r) => (
           <div key={r.key} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
-                <FileText className="h-5 w-5 text-blue-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50">
+                <FileText className="h-5 w-5 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-800">{r.title}</p>

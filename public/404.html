@@ -4,15 +4,17 @@
     <meta charset="utf-8" />
     <title>Wema Super Agent</title>
     <script>
-      // GitHub Pages SPA fallback: redirect any unknown path into the app base path.
+      // GitHub Pages 404 fallback: redirect to the app root at the same
+      // subpath so the SPA can take over. Works for root or subpath hosting.
       (function () {
-        var base = '/pos-manager/';
         var path = window.location.pathname;
-        if (path === '/' || path === '/index.html') {
-          window.location.replace(base);
-        } else if (path.indexOf(base) !== 0) {
-          window.location.replace(base + path.replace(/^\/+/, ''));
-        }
+        // Strip any trailing file (e.g. /foo/bar) down to the repo root.
+        // GitHub Pages repo sites live under /<repo>/, so we keep the first
+        // path segment and drop everything after it.
+        var segments = path.split('/').filter(Boolean);
+        var root = segments.length ? '/' + segments[0] + '/' : '/';
+        sessionStorage.setItem('gh-pages:redirect', path);
+        window.location.replace(root);
       })();
     </script>
   </head>

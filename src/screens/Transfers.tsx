@@ -63,7 +63,7 @@ export function TransfersScreen({ onBack }: { onBack: () => void }) {
             <button
               key={t.id}
               onClick={() => setSelected(t)}
-              className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm hover:border-blue-300 hover:shadow-md"
+              className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm hover:border-purple-300 hover:shadow-md"
             >
               <div className="flex items-start justify-between">
                 <div>

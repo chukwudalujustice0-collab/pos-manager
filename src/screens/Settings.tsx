@@ -30,21 +30,21 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="flex gap-1 border-b border-slate-200">
-        <button onClick={() => setTab('locations')} className={`px-3 py-2 text-sm font-medium ${tab === 'locations' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-slate-500'}`}>
+        <button onClick={() => setTab('locations')} className={`px-3 py-2 text-sm font-medium ${tab === 'locations' ? 'border-b-2 border-purple-600 text-purple-700' : 'text-slate-500'}`}>
           Locations
         </button>
         {isOwner && (
-          <button onClick={() => setTab('users')} className={`px-3 py-2 text-sm font-medium ${tab === 'users' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-slate-500'}`}>
+          <button onClick={() => setTab('users')} className={`px-3 py-2 text-sm font-medium ${tab === 'users' ? 'border-b-2 border-purple-600 text-purple-700' : 'text-slate-500'}`}>
             User Management
           </button>
         )}
         {isOwner && (
-          <button onClick={() => setTab('serial')} className={`px-3 py-2 text-sm font-medium ${tab === 'serial' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-slate-500'}`}>
+          <button onClick={() => setTab('serial')} className={`px-3 py-2 text-sm font-medium ${tab === 'serial' ? 'border-b-2 border-purple-600 text-purple-700' : 'text-slate-500'}`}>
             Serial Format
           </button>
         )}
         {isStaff && (
-          <button onClick={() => setTab('invitations')} className={`px-3 py-2 text-sm font-medium ${tab === 'invitations' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-slate-500'}`}>
+          <button onClick={() => setTab('invitations')} className={`px-3 py-2 text-sm font-medium ${tab === 'invitations' ? 'border-b-2 border-purple-600 text-purple-700' : 'text-slate-500'}`}>
             Invitations
           </button>
         )}
@@ -167,7 +167,7 @@ function UsersTab() {
               <div>
                 <p className="text-sm font-medium text-slate-800">{u.full_name}</p>
                 <p className="text-xs text-slate-400">{u.email}</p>
-                <span className="mt-1 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700 capitalize">
+                <span className="mt-1 inline-block rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-700 capitalize">
                   {u.role.replace('_', ' ')}
                 </span>
                 {!u.is_active && <span className="ml-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">disabled</span>}
@@ -218,7 +218,7 @@ function EditUserModal({ user, agents, onClose, onDone }: { user: Profile; agent
           />
         )}
         <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-blue-600" />
+          <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-purple-600" />
           Account active (user can sign in)
         </label>
         {error && <ErrorBanner message={error} />}
@@ -256,7 +256,7 @@ function SerialRulesTab() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+      <div className="rounded-lg border border-purple-200 bg-purple-50 p-3 text-sm text-purple-700">
         <p className="flex items-center gap-1.5 font-medium"><ScanLine className="h-4 w-4" /> Serial number format</p>
         <p className="mt-1 text-xs">These rules define what counts as a valid serial number when scanning with the camera and when typing manually. Check one of your actual POS labels and match the format here.</p>
       </div>
@@ -325,7 +325,7 @@ function InvitationsTab() {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-700">
+      <div className="rounded-lg border border-purple-200 bg-purple-50 p-3 text-xs text-purple-700">
         <p className="flex items-center gap-1.5 font-medium"><KeyRound className="h-4 w-4" /> Invitation Pass Keys</p>
         <p className="mt-1">Generate a pass key for each person you want to invite. Share the key and your app URL with them. The key is bound to a phone number and can only be used once. When the invitee signs up, their account is automatically linked to an existing agent record that matches their phone or email.</p>
       </div>
@@ -366,7 +366,7 @@ function InvitationCard({ inv, onRevoke }: { inv: Invitation; onRevoke: () => vo
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize ${statusColors[inv.status] ?? statusColors.active}`}>{inv.status}</span>
-            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700 capitalize">{inv.role.replace('_', ' ')}</span>
+            <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-700 capitalize">{inv.role.replace('_', ' ')}</span>
           </div>
           <p className="mt-1.5 text-sm font-medium text-slate-800">{inv.full_name || 'Unnamed invitee'}</p>
           <p className="text-xs text-slate-400">{inv.phone}</p>

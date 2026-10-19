@@ -21,7 +21,7 @@ export function BannerScreen({ onBack }: { onBack?: () => void }) {
       </div>
       <div className="flex gap-1 text-sm">
         {([['dashboard', 'Stock'], ['receive', 'Receive'], ['transfers', 'Transfers'], ['report', 'Issued']] as [BannerView, string][]).map(([v, label]) => (
-          <button key={v} onClick={() => setView(v)} className={classNames('rounded-lg px-3 py-1.5 font-medium', view === v ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200')}>
+          <button key={v} onClick={() => setView(v)} className={classNames('rounded-lg px-3 py-1.5 font-medium', view === v ? 'bg-purple-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200')}>
             {label}
           </button>
         ))}
@@ -115,7 +115,7 @@ function Metric({ label, value, accent }: { label: string; value: number; accent
   return (
     <Card className="p-3">
       <p className="text-xs text-slate-400">{label}</p>
-      <p className={classNames('mt-1 text-lg font-bold', accent ? 'text-blue-700' : 'text-slate-800')}>{value}</p>
+      <p className={classNames('mt-1 text-lg font-bold', accent ? 'text-purple-700' : 'text-slate-800')}>{value}</p>
     </Card>
   );
 }
@@ -333,7 +333,7 @@ function BannerTransfersView({ isStaff }: { isStaff: boolean }) {
                   <p className="text-xs text-slate-400">{t.transfer_code} · {formatDate(t.dispatch_date)}{t.waybill_ref ? ` · ${t.waybill_ref}` : ''}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <StatusChip label={t.status.replace('_', ' ')} color={t.status === 'received' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : t.status === 'exception' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-100 text-blue-700 border-blue-200'} />
+                  <StatusChip label={t.status.replace('_', ' ')} color={t.status === 'received' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : t.status === 'exception' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-purple-100 text-purple-700 border-purple-200'} />
                   {isStaff && t.status === 'in_transit' && (
                     <Button size="sm" variant="outline" onClick={() => setConfirming(t)}>Confirm</Button>
                   )}

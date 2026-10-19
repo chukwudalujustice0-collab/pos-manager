@@ -103,9 +103,9 @@ export function Dashboard({ onNavigate }: { onNavigate: (tab: NavTab) => void })
   }
 
   const cards: { label: string; value: number; icon: LucideIcon; color: string; tab?: NavTab; status?: Terminal['status'] }[] = [
-    { label: 'Total Received', value: metrics.totalReceived, icon: PackageCheck, color: 'bg-blue-50 text-blue-700', tab: 'inventory' },
+    { label: 'Total Received', value: metrics.totalReceived, icon: PackageCheck, color: 'bg-purple-50 text-purple-700', tab: 'inventory' },
     { label: 'In Warehouse', value: metrics.inWarehouse, icon: Boxes, color: 'bg-emerald-50 text-emerald-700', tab: 'inventory', status: 'available' },
-    { label: 'With Agents', value: metrics.withAgents, icon: Users, color: 'bg-blue-50 text-blue-700', tab: 'agents' },
+    { label: 'With Agents', value: metrics.withAgents, icon: Users, color: 'bg-purple-50 text-purple-700', tab: 'agents' },
     { label: 'Sold', value: metrics.sold, icon: ShoppingCart, color: 'bg-violet-50 text-violet-700', tab: 'sales' },
     { label: 'Mapped to Customers', value: metrics.mapped, icon: TrendingUp, color: 'bg-emerald-50 text-emerald-700', tab: 'sales' },
     { label: 'Pending Details', value: metrics.pendingDetails, icon: AlertTriangle, color: 'bg-amber-50 text-amber-700', tab: 'sales' },
@@ -125,7 +125,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (tab: NavTab) => void })
             <button
               key={c.label}
               onClick={() => c.tab && onNavigate(c.tab)}
-              className="flex flex-col rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
+              className="flex flex-col rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-purple-300 hover:shadow-md"
             >
               <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-lg ${c.color}`}>
                 <Icon className="h-5 w-5" />

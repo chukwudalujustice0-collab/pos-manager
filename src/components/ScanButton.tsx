@@ -11,7 +11,7 @@ export function ScanButton({ onScan }: { onScan: (serial: string) => void }) {
         type="button"
         onClick={() => setOpen(true)}
         title="Scan serial number with camera"
-        className="flex h-[38px] items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
+        className="flex h-[38px] items-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 text-sm font-medium text-purple-700 transition-colors hover:bg-purple-100"
       >
         <ScanLine className="h-4 w-4" /> Scan
       </button>

@@ -31,7 +31,7 @@ export function AppShell({ active, onNavigate, onOpenSearch, onOpenNotifications
       {/* Top bar */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-700">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-800">
             <Boxes className="h-5 w-5 text-white" />
           </div>
           <span className="text-sm font-semibold text-slate-800">Wema Super Agent</span>
@@ -70,7 +70,7 @@ export function AppShell({ active, onNavigate, onOpenSearch, onOpenNotifications
                   <div className="px-4 py-2">
                     <p className="text-sm font-medium text-slate-800">{profile?.full_name}</p>
                     <p className="text-xs text-slate-400">{profile?.email}</p>
-                    <span className="mt-1 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700 capitalize">
+                    <span className="mt-1 inline-block rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-700 capitalize">
                       {profile?.role.replace('_', ' ')}
                     </span>
                   </div>
@@ -111,7 +111,7 @@ export function AppShell({ active, onNavigate, onOpenSearch, onOpenNotifications
               onClick={() => onNavigate(tab.id)}
               className={classNames(
                 'flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors',
-                isActive ? 'text-blue-700' : 'text-slate-400 hover:text-slate-600'
+                isActive ? 'text-purple-800' : 'text-slate-400 hover:text-slate-600'
               )}
             >
               <Icon className={classNames('h-5 w-5', isActive && 'stroke-[2.5]')} />

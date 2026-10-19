@@ -54,10 +54,10 @@ export function NotificationsModal({ onClose }: { onClose: () => void }) {
                 onClick={() => markRead(n.id)}
                 className={classNames(
                   'flex w-full items-start gap-3 rounded-lg p-3 text-left',
-                  n.is_read ? 'bg-white' : 'bg-blue-50'
+                  n.is_read ? 'bg-white' : 'bg-purple-50'
                 )}
               >
-                {!n.is_read && <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-blue-600" />}
+                {!n.is_read && <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-purple-600" />}
                 <div className={classNames('flex-1', n.is_read && 'ml-5')}>
                   <p className="text-sm font-medium text-slate-800">{n.title}</p>
                   {n.body && <p className="text-xs text-slate-500">{n.body}</p>}

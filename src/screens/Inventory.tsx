@@ -119,7 +119,7 @@ export function InventoryScreen() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search serial number…"
-            className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           {search && (
             <button onClick={() => setSearch('')} className="absolute right-2 top-2 p-1 text-slate-400 hover:text-slate-600">
@@ -130,7 +130,7 @@ export function InventoryScreen() {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value as FilterStatus)}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
           {filterOptions.map((o) => (
             <option key={o.value} value={o.value}>
@@ -150,7 +150,7 @@ export function InventoryScreen() {
             <button
               key={t.id}
               onClick={() => setSelected(t)}
-              className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
+              className="block w-full rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-purple-300 hover:shadow-md"
             >
               <div className="flex items-start justify-between">
                 <div>

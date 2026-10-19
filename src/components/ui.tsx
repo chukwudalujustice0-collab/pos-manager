@@ -40,7 +40,7 @@ export function Button({
   className?: string;
 }) {
   const variants = {
-    primary: 'bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900',
+    primary: 'bg-purple-800 text-white hover:bg-purple-900 active:bg-purple-950',
     secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200',
     danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
     ghost: 'text-slate-600 hover:bg-slate-100',
@@ -58,7 +58,7 @@ export function Button({
       disabled={disabled}
       className={classNames(
         'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1',
+        'focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1',
         'disabled:cursor-not-allowed disabled:opacity-50',
         variants[variant],
         sizes[size],
@@ -105,7 +105,7 @@ export function Input({
         disabled={disabled}
         className={classNames(
           'w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500',
+          'focus:outline-none focus:ring-2 focus:ring-purple-500',
           error ? 'border-red-300' : 'border-slate-300',
           disabled && 'cursor-not-allowed bg-slate-50'
         )}
@@ -141,7 +141,7 @@ export function Select({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
-        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {options.map((o) => (
@@ -182,7 +182,7 @@ export function Textarea({
         placeholder={placeholder}
         rows={rows}
         required={required}
-        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
     </div>
   );
@@ -248,7 +248,7 @@ export function EmptyState({ icon, title, subtitle }: { icon?: ReactNode; title:
 export function LoadingSpinner({ label }: { label?: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <div className="h-8 w-8 animate-spin rounded-full border-3 border-slate-200 border-t-blue-600" />
+      <div className="h-8 w-8 animate-spin rounded-full border-3 border-slate-200 border-t-purple-600" />
       {label && <p className="mt-3 text-sm text-slate-500">{label}</p>}
     </div>
   );

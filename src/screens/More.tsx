@@ -59,10 +59,10 @@ export function MoreScreen({ onNavigate }: { onNavigate: (tab: NavTab) => void }
             <button
               key={item.label}
               onClick={() => setView(item.view)}
-              className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
+              className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition-all hover:border-purple-300 hover:shadow-md"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
-                <Icon className="h-5 w-5 text-blue-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50">
+                <Icon className="h-5 w-5 text-purple-600" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-slate-800">{item.label}</p>

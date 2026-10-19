@@ -241,7 +241,7 @@ export function SingleScanModal({
 
       {mode === 'photo' && busy && (
         <div className="flex flex-col items-center py-10">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
           <p className="mt-3 text-sm text-slate-500">Reading label…</p>
         </div>
       )}
@@ -270,7 +270,7 @@ export function SingleScanModal({
                   <p className="font-medium">Other candidates found:</p>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {candidates.filter((c) => c !== result.toUpperCase()).map((c) => (
-                      <button key={c} onClick={() => setResult(c)} className="rounded bg-white px-2 py-0.5 font-mono text-[11px] text-blue-700 ring-1 ring-slate-200">
+                      <button key={c} onClick={() => setResult(c)} className="rounded bg-white px-2 py-0.5 font-mono text-[11px] text-purple-700 ring-1 ring-slate-200">
                         {c}
                       </button>
                     ))}

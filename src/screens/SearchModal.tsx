@@ -42,11 +42,11 @@ export function SearchModal({ onClose }: { onClose: () => void }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search serial number, model…"
-              className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-24 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
             <button
               onClick={() => setScanOpen(true)}
-              className="absolute right-2 top-1.5 flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700"
+              className="absolute right-2 top-1.5 flex items-center gap-1 rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700"
             >
               <ScanLine className="h-3.5 w-3.5" /> Scan
             </button>

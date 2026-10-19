@@ -9,18 +9,16 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
     <script>
-      // GitHub Pages SPA fallback: if the server served 404.html at an unknown
-      // path, bounce the browser into the app base path.
+      // GitHub Pages SPA fallback: detect the base path from the first bundled
+      // module script so this works whether served from root or a subpath.
       (function () {
-        var base = '/pos-manager/';
-        var path = window.location.pathname;
-        if (path !== base && path.indexOf(base) !== 0 && window.location.pathname !== '/pos-manager/index.html') {
-          var redirect = sessionStorage.getItem('redirect');
-          if (redirect && redirect !== path) {
-            sessionStorage.removeItem('redirect');
-            window.location.replace(base + redirect.replace(/^\/+/, ''));
-          }
-        }
+        var path = window.location.pathname.replace(/\/+$/, '');
+        var here = path || '/';
+        // Only redirect when served from a subpath (GitHub Pages), not root.
+        if (here === '/' || here === '/index.html' || here === '/404.html') return;
+        try {
+          sessionStorage.setItem('gh-pages:redirect', here);
+        } catch (e) {}
       })();
     </script>
   </head>
