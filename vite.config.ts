@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 
@@ -8,16 +8,24 @@ import { fileURLToPath, URL } from 'node:url';
 // the deploy workflow sets VITE_BASE_PATH so the default build keeps working.
 const base = process.env.VITE_BASE_PATH || '/';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+
+  return {
   base,
   plugins: [react()],
+  define: {
+    'import.meta.env.NEXT_PUBLIC_SUPABASE_URL': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_URL),
+    'import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  optimizeDeps: {
-    include: ['lucide-react'],
-    exclude: ['tesseract.js'],
-  },
+    optimizeDeps: {
+      include: ['lucide-react'],
+      exclude: ['tesseract.js'],
+    },
+  };
 });
