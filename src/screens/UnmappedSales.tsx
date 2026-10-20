@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { supabase, type Sale, type Agent, type MappingStatus, type ApprovalStatus } from '@/lib/supabase';
+import { supabase, type Sale, type Agent, type ApprovalStatus } from '@/lib/supabase';
 import { Card, Button, LoadingSpinner, EmptyState, StatusChip, ErrorBanner, Modal, Input, Textarea, Select } from '@/components/ui';
 import { MAPPING_LABELS, MAPPING_COLORS, formatDate, formatDateTime, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -258,7 +258,6 @@ function SaleDetailsTab({ sale }: { sale: Sale }) {
 }
 
 function MapCustomerTab({ sale, onDone }: { sale: Sale; onDone: () => void }) {
-  const { user } = useAuth();
   const [name, setName] = useState(sale.customer?.full_name ?? '');
   const [phone, setPhone] = useState(sale.customer?.phone ?? '');
   const [email, setEmail] = useState(sale.customer?.email ?? '');

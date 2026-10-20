@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase, type Terminal, type InventoryMovement, type SaleFinance, type AuditEvent, type TerminalReturn } from '@/lib/supabase';
-import { Modal, StatusChip, LoadingSpinner, Button, Select, Textarea, Input, ErrorBanner, SuccessBanner } from '@/components/ui';
+import { Modal, StatusChip, LoadingSpinner, Button, Select, Textarea, Input, ErrorBanner } from '@/components/ui';
 import { STATUS_LABELS, STATUS_COLORS, formatDate, formatDateTime, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { Package, ArrowRight, ShoppingCart, AlertTriangle, RotateCcw, Edit, TrendingUp, Trash2, Check, X } from 'lucide-react';
+import { Package, ArrowRight, ShoppingCart, AlertTriangle, RotateCcw, Edit, TrendingUp, Trash2, Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal: Terminal; onClose: () => void; onChanged: () => void }) {
@@ -14,7 +14,6 @@ export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal
   const [audit, setAudit] = useState<AuditEvent[]>([]);
   const [activeReturn, setActiveReturn] = useState<TerminalReturn | null>(null);
   const [loading, setLoading] = useState(true);
-  const [editOpen, setEditOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [serialModal, setSerialModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -82,7 +81,6 @@ export function TerminalDetailModal({ terminal, onClose, onChanged }: { terminal
       details: { from: terminal.status, to: newStatus, reason },
     });
     onChanged();
-    setEditOpen(false);
   };
 
   return (

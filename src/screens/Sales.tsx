@@ -1,12 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
-import { supabase, type Sale, type Terminal, type Agent, type Customer } from '@/lib/supabase';
+import { supabase, type Sale, type Terminal } from '@/lib/supabase';
 import { Card, Button, LoadingSpinner, EmptyState, Modal, Input, Select, Textarea, ErrorBanner, StatusChip } from '@/components/ui';
 import { MAPPING_LABELS, MAPPING_COLORS, formatDate, formatCurrency, generateCode, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { ShoppingCart, Plus, FileDown, Search, X, User, ClipboardList, UserPlus, RotateCcw } from 'lucide-react';
+import { ShoppingCart, Plus, FileDown, Search, X, UserPlus, RotateCcw } from 'lucide-react';
 import { ScanButton } from '@/components/ScanButton';
 import { recordSaleFinanceSafe, type FinancePrefs } from '@/lib/finance';
-import { loadBannerTypesForIssue, BannerIssueSection } from '@/screens/BannerShared';
+import { BannerIssueSection } from '@/screens/BannerShared';
 import { SaleDetailDrawer } from '@/screens/UnmappedSales';
 
 export function SalesScreen() {
