@@ -24,6 +24,8 @@ export type TerminalStatus =
 
 export type TransferStatus = 'draft' | 'dispatched' | 'in_transit' | 'received' | 'partial' | 'exception';
 export type MappingStatus = 'mapped' | 'pending_details';
+export type ApprovalStatus = 'confirmed' | 'pending_approval' | 'rejected';
+export type ReturnCondition = 'working' | 'damaged' | 'awaiting_inspection';
 export type MovementType =
   | 'receipt'
   | 'dispatch'
@@ -122,11 +124,14 @@ export interface Terminal {
   mapping_status: MappingStatus | null;
   exception_flag: boolean;
   notes: string | null;
+  voided: boolean;
+  return_id: string | null;
   created_at: string;
   updated_at: string;
   agent?: Agent | null;
   location?: Location | null;
   receipt_batch?: ReceiptBatch | null;
+  active_return?: TerminalReturn | null;
 }
 
 export interface Transfer {
@@ -191,7 +196,10 @@ export interface Sale {
   channel: string | null;
   sale_price: number | null;
   mapping_status: MappingStatus;
+  approval_status: ApprovalStatus;
   recorded_by: string | null;
+  mapped_by: string | null;
+  mapped_at: string | null;
   notes: string | null;
   created_at: string;
   terminal?: Terminal;
@@ -240,6 +248,25 @@ export interface AuditEvent {
   entity_id: string | null;
   details: Record<string, unknown> | null;
   created_at: string;
+}
+
+export interface TerminalReturn {
+  id: string;
+  terminal_id: string;
+  sale_id: string | null;
+  returned_by: string | null;
+  return_date: string;
+  reason: string;
+  condition: ReturnCondition;
+  confirmed: boolean;
+  confirmed_by: string | null;
+  confirmed_at: string | null;
+  rejected: boolean;
+  rejection_note: string | null;
+  notes: string | null;
+  created_at: string;
+  terminal?: Terminal;
+  sale?: Sale | null;
 }
 
 // ===================== Finance module types =====================

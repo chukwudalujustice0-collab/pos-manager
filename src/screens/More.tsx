@@ -1,7 +1,7 @@
 import type { NavTab } from '@/components/AppShell';
 import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui';
-import { Package, ArrowLeftRight, Receipt, FileText, Shield, Settings as SettingsIcon, Users, ChevronRight, FileDown, TrendingUp, Image as ImageIcon, Wallet, Landmark, ReceiptText } from 'lucide-react';
+import { Package, ArrowLeftRight, Receipt, FileText, Shield, Settings as SettingsIcon, Users, ChevronRight, FileDown, TrendingUp, Image as ImageIcon, Wallet, Landmark, ReceiptText, ClipboardList } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import { ReceiptsScreen } from '@/screens/Receipts';
@@ -13,8 +13,9 @@ import { CustomersScreen } from '@/screens/Customers';
 import { FinanceDashboard } from '@/screens/FinanceDashboard';
 import { FinanceAdmin } from '@/screens/FinanceAdmin';
 import { BannerScreen } from '@/screens/BannerScreen';
+import { UnmappedSalesScreen } from '@/screens/UnmappedSales';
 
-type MoreView = 'menu' | 'receipts' | 'transfers' | 'reports' | 'audit' | 'settings' | 'customers' | 'finance' | 'expenses' | 'reconciliation' | 'fin_settings' | 'banners';
+type MoreView = 'menu' | 'receipts' | 'transfers' | 'reports' | 'audit' | 'settings' | 'customers' | 'finance' | 'expenses' | 'reconciliation' | 'fin_settings' | 'banners' | 'unmapped';
 
 export function MoreScreen({ onNavigate }: { onNavigate: (tab: NavTab) => void }) {
   const { profile } = useAuth();
@@ -32,6 +33,7 @@ export function MoreScreen({ onNavigate }: { onNavigate: (tab: NavTab) => void }
   if (view === 'reconciliation') return <FinanceAdmin tab="reconciliation" onBack={() => setView('menu')} />;
   if (view === 'fin_settings') return <FinanceAdmin tab="settings" onBack={() => setView('menu')} />;
   if (view === 'banners') return <BannerScreen onBack={() => setView('menu')} />;
+  if (view === 'unmapped') return <UnmappedSalesScreen onBack={() => setView('menu')} />;
 
   const items: { label: string; icon: LucideIcon; view: MoreView; desc: string; staffOnly?: boolean }[] = [
     { label: 'Profit & Finance', icon: TrendingUp, view: 'finance', desc: 'Commission, costs & net profit', staffOnly: true },
@@ -39,6 +41,7 @@ export function MoreScreen({ onNavigate }: { onNavigate: (tab: NavTab) => void }
     { label: 'Receipts', icon: Receipt, view: 'receipts', desc: 'Stock received & batch history', staffOnly: true },
     { label: 'Transfers', icon: ArrowLeftRight, view: 'transfers', desc: 'Dispatch & delivery confirmations' },
     { label: 'Customers', icon: Users, view: 'customers', desc: 'Customer records' },
+    { label: 'Unmapped Sales', icon: ClipboardList, view: 'unmapped', desc: 'Sold terminals awaiting customer mapping' },
     { label: 'Reports', icon: FileText, view: 'reports', desc: 'Download CSV reports', staffOnly: true },
     { label: 'Audit Trail', icon: Shield, view: 'audit', desc: 'Movement ledger & corrections', staffOnly: true },
     { label: 'Business Expenses', icon: Wallet, view: 'expenses', desc: 'Operating expense records', staffOnly: true },

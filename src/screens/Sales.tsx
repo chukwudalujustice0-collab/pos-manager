@@ -3,10 +3,11 @@ import { supabase, type Sale, type Terminal, type Agent, type Customer } from '@
 import { Card, Button, LoadingSpinner, EmptyState, Modal, Input, Select, Textarea, ErrorBanner, StatusChip } from '@/components/ui';
 import { MAPPING_LABELS, MAPPING_COLORS, formatDate, formatCurrency, generateCode, classNames } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { ShoppingCart, Plus, FileDown, Search, X, User } from 'lucide-react';
+import { ShoppingCart, Plus, FileDown, Search, X, User, ClipboardList, UserPlus, RotateCcw } from 'lucide-react';
 import { ScanButton } from '@/components/ScanButton';
 import { recordSaleFinanceSafe, type FinancePrefs } from '@/lib/finance';
 import { loadBannerTypesForIssue, BannerIssueSection } from '@/screens/BannerShared';
+import { SaleDetailDrawer } from '@/screens/UnmappedSales';
 
 export function SalesScreen() {
   const { profile } = useAuth();
@@ -16,6 +17,7 @@ export function SalesScreen() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'mapped' | 'pending_details'>('all');
   const [addOpen, setAddOpen] = useState(false);
+  const [selected, setSelected] = useState<Sale | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -68,6 +70,12 @@ export function SalesScreen() {
         </div>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        <button onClick={() => setFilter('all')} className={classNames('rounded-full px-3 py-1 text-xs font-medium', filter === 'all' ? 'bg-purple-800 text-white' : 'bg-slate-100 text-slate-600')}>All</button>
+        <button onClick={() => setFilter('pending_details')} className={classNames('rounded-full px-3 py-1 text-xs font-medium', filter === 'pending_details' ? 'bg-purple-800 text-white' : 'bg-slate-100 text-slate-600')}>Pending Details</button>
+        <button onClick={() => setFilter('mapped')} className={classNames('rounded-full px-3 py-1 text-xs font-medium', filter === 'mapped' ? 'bg-purple-800 text-white' : 'bg-slate-100 text-slate-600')}>Mapped</button>
+      </div>
+
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -87,25 +95,38 @@ export function SalesScreen() {
         <EmptyState icon={<ShoppingCart className="h-12 w-12" />} title="No sales recorded" subtitle="Record your first POS terminal sale." />
       ) : (
         <div className="space-y-2">
-          {filtered.map((s) => (
-            <Card key={s.id} className="p-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="font-mono text-sm font-semibold text-slate-900">{s.terminal?.serial_number ?? '—'}</p>
-                  <p className="text-xs text-slate-500">{s.customer?.full_name || 'No customer mapped'}</p>
-                  <p className="text-xs text-slate-400">{s.sale_code} · {formatDate(s.sale_date)} · {s.agent?.full_name || 'Direct sale'}</p>
+          {filtered.map((s) => {
+            const isReturned = s.terminal?.status === 'returned';
+            const canMap = s.mapping_status === 'pending_details' && !isReturned;
+            const canReturn = (s.terminal?.status === 'sold' || s.terminal?.status === 'assigned');
+            return (
+              <Card key={s.id} className="p-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="font-mono text-sm font-semibold text-slate-900">{s.terminal?.serial_number ?? '—'}</p>
+                    <p className="text-xs text-slate-500">{s.customer?.full_name || 'No customer mapped'}</p>
+                    <p className="text-xs text-slate-400">{s.sale_code} · {formatDate(s.sale_date)} · {s.agent?.full_name || 'Direct sale'}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <StatusChip label={MAPPING_LABELS[s.mapping_status]} color={MAPPING_COLORS[s.mapping_status]} />
+                    {s.sale_price != null && <span className="text-sm font-semibold text-slate-700">{formatCurrency(s.sale_price)}</span>}
+                  </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <StatusChip label={MAPPING_LABELS[s.mapping_status]} color={MAPPING_COLORS[s.mapping_status]} />
-                  {s.sale_price != null && <span className="text-sm font-semibold text-slate-700">{formatCurrency(s.sale_price)}</span>}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setSelected(s)}>View</Button>
+                  {canMap && <Button size="sm" onClick={() => setSelected(s)}><UserPlus className="h-3.5 w-3.5" /> Complete Mapping</Button>}
+                  {canReturn && <Button size="sm" variant="secondary" onClick={() => setSelected(s)}><RotateCcw className="h-3.5 w-3.5" /> Return</Button>}
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
 
       {addOpen && <NewSaleModal onClose={() => setAddOpen(false)} onDone={load} />}
+      {selected && (
+        <SaleDetailDrawer sale={selected} onClose={() => setSelected(null)} onChanged={() => { setSelected(null); load(); }} />
+      )}
     </div>
   );
 }
