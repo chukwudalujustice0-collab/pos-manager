@@ -5,7 +5,11 @@ const supabaseUrl =
   (import.meta.env.NEXT_PUBLIC_SUPABASE_URL as string | undefined);
 const supabaseAnonKey =
   (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) ??
-  (import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string | undefined);
+  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) ??
+  (import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string | undefined) ??
+  (import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string | undefined) ??
+  (import.meta.env.SUPABASE_ANON_KEY as string | undefined) ??
+  (import.meta.env.SUPABASE_PUBLISHABLE_KEY as string | undefined);
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase configuration is missing.');
